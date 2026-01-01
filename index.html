@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aksara Picture - Foto Wisuda Malang Surabaya Kediri</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Fonts: Playfair Display & Manrope -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+    <!-- GSAP Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        'studio-black': '#0a0a0a',
+                        'studio-gray': '#1c1c1c',
+                        'studio-white': '#f5f5f5',
+                        'studio-gold': '#d4af37',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #f5f5f5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Page Transition Styles */
+        .page-section {
+            display: none; /* Default hidden */
+            min-height: 100vh;
+            padding-top: 100px; /* Space for fixed header */
+            opacity: 0;
+            animation: none;
+            position: relative; /* Important for background positioning */
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Navigation Active State */
+        .nav-link.active {
+            color: #fff;
+            border-bottom: 1px solid #fff;
+        }
+
+        /* Image Hover Effect */
+        .portfolio-item {
+            position: relative;
+            overflow: hidden;
+        }
+        .portfolio-item img {
+            transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .portfolio-item:hover img {
+            transform: scale(1.05);
+        }
+        .portfolio-overlay {
+            background: rgba(0,0,0,0.4);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .portfolio-item:hover .portfolio-overlay {
+            opacity: 1;
+        }
+
+        /* Filter Button Active State */
+        .filter-btn.active {
+            color: #fff;
+            border-color: #d4af37; /* Studio Gold */
+        }
+
+        /* Hero Slideshow Styles */
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 2s ease-in-out, transform 8s linear;
+            transform: scale(1.1);
+        }
+        .hero-slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Modal & Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION (Fixed Header) -->
+    <nav class="fixed top-0 w-full z-50 px-8 py-6 flex justify-between items-center bg-studio-black/80 backdrop-blur-sm border-b border-white/5 transition-all duration-300">
+        <!-- Logo -->
+        <a href="#" onclick="navigateTo('home')" class="font-serif text-2xl tracking-wide italic z-50 relative">AksaraPicture.</a>
+
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex gap-10 text-xs tracking-[0.2em] uppercase font-sans text-gray-400">
+            <button onclick="navigateTo('home')" class="nav-link hover:text-white transition-all pb-1 active" id="link-home">Home</button>
+            <button onclick="navigateTo('portfolio')" class="nav-link hover:text-white transition-all pb-1" id="link-portfolio">Portfolio</button>
+            <button onclick="navigateTo('services')" class="nav-link hover:text-white transition-all pb-1" id="link-services">Services</button>
+            <button onclick="navigateTo('contact')" class="nav-link hover:text-white transition-all pb-1" id="link-contact">Contact</button>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button onclick="toggleMobileMenu()" class="md:hidden text-white text-xl z-50 relative w-8 h-8 flex items-center justify-center">
+            <i class="fa-solid fa-bars-staggered transition-transform duration-300" id="mobile-menu-icon"></i>
+        </button>
+    </nav>
+
+    <!-- MOBILE MENU OVERLAY -->
+    <div id="mobile-menu" class="fixed inset-0 bg-studio-black z-40 flex flex-col items-center justify-center gap-8 opacity-0 pointer-events-none transition-opacity duration-300">
+         <button onclick="navigateTo('home'); toggleMobileMenu()" class="text-3xl font-serif italic hover:text-studio-gold transition-colors">Home</button>
+         <button onclick="navigateTo('portfolio'); toggleMobileMenu()" class="text-3xl font-serif italic hover:text-studio-gold transition-colors">Portfolio</button>
+         <button onclick="navigateTo('services'); toggleMobileMenu()" class="text-3xl font-serif italic hover:text-studio-gold transition-colors">Services</button>
+         <button onclick="navigateTo('contact'); toggleMobileMenu()" class="text-3xl font-serif italic hover:text-studio-gold transition-colors">Contact</button>
+    </div>
+
+    <!-- CONTENT CONTAINER -->
+    <main id="app-content" class="relative z-10">
+
+        <!-- 1. HOME PAGE (Updated with Slideshow & Spoilers) -->
+        <section id="home" class="page-section active" style="padding-top: 0;">
+            <!-- HERO SECTION -->
+            <div class="h-screen relative flex items-center justify-center overflow-hidden">
+                <div class="absolute inset-0 z-0 bg-black">
+                    <!-- Slideshow Container -->
+                    <div id="hero-slideshow">
+                        <img src="4.jpg" class="hero-slide active" alt="Hero 1">
+                        <img src="5.jpg" class="hero-slide" alt="Hero 2">
+                        <img src="6.jpg" class="hero-slide" alt="Hero 3">
+                        <img src="5.jpg" class="hero-slide" alt="Hero 4">
+                    </div>
+                    <!-- REDUCED OPACITY HERE: bg-black/30 instead of 40 -->
+                    <div class="absolute inset-0 bg-black/30 z-10"></div>
+                </div>
+                
+                <div class="relative z-10 text-center px-4 mt-20">
+                    <p class="text-xs tracking-[0.3em] uppercase mb-6 text-gray-200 animate-fade-in-up font-medium drop-shadow-md">#rollingwithaksara</p>
+                    <h1 class="font-serif text-6xl md:text-8xl italic leading-tight mb-8 drop-shadow-lg">
+                        Aksara <br> <span class="not-italic">Picture</span>
+                    </h1>
+                    <button onclick="document.getElementById('home-content').scrollIntoView({behavior: 'smooth'})" class="animate-bounce border border-white/50 px-8 py-3 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300 backdrop-blur-sm shadow-lg">
+                        Our Portfolio
+                    </button>
+                </div>
+            </div>
+
+            <!-- SPOILER CONTENT WRAPPER -->
+            <div id="home-content" class="relative z-20 bg-studio-black">
+                
+                <!-- PORTFOLIO SPOILER -->
+                <div class="relative py-24 px-6 md:px-12 border-b border-white/5 overflow-hidden">
+                    <!-- Background Image -->
+                    <div class="absolute inset-0 z-0">
+                        <!-- REDUCED OPACITY HERE: bg-studio-black/70 instead of 90 -->
+                        <div class="absolute inset-0 bg-studio-black/70 z-10"></div> 
+                        <img src="5.jpg" class="w-full h-full object-cover opacity-60 grayscale" alt="Portfolio Spoiler BG">
+                    </div>
+
+                    <div class="relative z-10 max-w-6xl mx-auto">
+                        <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+                            <div>
+                                <span class="text-xs text-studio-gold tracking-widest uppercase mb-2 block font-bold drop-shadow-md">Latest Stories</span>
+                                <h2 class="font-serif text-3xl md:text-4xl italic drop-shadow-md">Captured Moments</h2>
+                            </div>
+                            <button onclick="navigateTo('portfolio')" class="text-xs text-gray-300 hover:text-white border-b border-transparent hover:border-white pb-1 transition-all mt-4 md:mt-0 font-medium">View All Portfolio →</button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <!-- Spoiler Item 1 -->
+                            <div class="group cursor-pointer" onclick="navigateTo('portfolio')">
+                                <div class="overflow-hidden aspect-[4/3] mb-4 border border-white/20 shadow-xl">
+                                    <img src="4.jpg" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                </div>
+                                <h3 class="font-serif text-xl italic text-gray-200 group-hover:text-white transition-colors drop-shadow-md">Tata Grads</h3>
+                                <p class="text-xs text-gray-400 uppercase tracking-widest mt-1 font-medium">Family Session</p>
+                            </div>
+                            <!-- Spoiler Item 2 -->
+                            <div class="group cursor-pointer" onclick="navigateTo('portfolio')">
+                                <div class="overflow-hidden aspect-[4/3] mb-4 border border-white/20 shadow-xl">
+                                    <img src="6.jpg" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                </div>
+                                <h3 class="font-serif text-xl italic text-gray-200 group-hover:text-white transition-colors drop-shadow-md">Tedi Grads</h3>
+                                <p class="text-xs text-gray-400 uppercase tracking-widest mt-1 font-medium">Family Session</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRICELIST SPOILER -->
+                <div class="relative py-24 px-6 md:px-12 border-b border-white/5 overflow-hidden">
+                    <!-- Background Image -->
+                    <div class="absolute inset-0 z-0">
+                        <!-- REDUCED OPACITY HERE: bg-studio-black/70 instead of 90 -->
+                        <div class="absolute inset-0 bg-studio-black/70 z-10"></div> 
+                        <img src="6.jpg" class="w-full h-full object-cover opacity-50 grayscale" alt="Price Spoiler BG">
+                    </div>
+
+                    <div class="relative z-10 max-w-4xl mx-auto text-center">
+                        <span class="text-xs text-studio-gold tracking-widest uppercase mb-4 block font-bold drop-shadow-md">Best Value</span>
+                        <h2 class="font-serif text-3xl md:text-4xl italic mb-12 drop-shadow-md">Popular Packages</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 text-left">
+                            <!-- Card 1 -->
+                            <div class="bg-black/60 backdrop-blur-md p-6 border border-white/10 hover:border-studio-gold transition-colors duration-300 group shadow-lg">
+                                <h4 class="font-serif text-xl mb-2 text-gray-200 group-hover:text-white">Self Session</h4>
+                                <p class="text-xs text-gray-400 mb-4 h-8">Perfect for personal graduation portraits.</p>
+                                <div class="border-t border-white/10 pt-4 mt-auto">
+                                    <span class="text-xs text-gray-400 uppercase">Starts from</span>
+                                    <p class="text-xl font-serif italic text-studio-gold">IDR 350K</p>
+                                </div>
+                            </div>
+                            <!-- Card 2 -->
+                            <div class="bg-black/60 backdrop-blur-md p-6 border border-white/10 hover:border-studio-gold transition-colors duration-300 group relative overflow-hidden shadow-lg">
+                                <div class="absolute top-0 right-0 bg-studio-gold text-black text-[10px] px-2 py-1 font-bold uppercase">Best Seller</div>
+                                <h4 class="font-serif text-xl mb-2 text-gray-200 group-hover:text-white">Group Session</h4>
+                                <p class="text-xs text-gray-400 mb-4 h-8">Fun session with your best friends.</p>
+                                <div class="border-t border-white/10 pt-4 mt-auto">
+                                    <span class="text-xs text-gray-400 uppercase">Starts from</span>
+                                    <p class="text-xl font-serif italic text-studio-gold">IDR 550K</p>
+                                </div>
+                            </div>
+                            <!-- Card 3 -->
+                            <div class="bg-black/60 backdrop-blur-md p-6 border border-white/10 hover:border-studio-gold transition-colors duration-300 group shadow-lg">
+                                <h4 class="font-serif text-xl mb-2 text-gray-200 group-hover:text-white">Prewedding</h4>
+                                <p class="text-xs text-gray-400 mb-4 h-8">Timeless memories for your journey.</p>
+                                <div class="border-t border-white/10 pt-4 mt-auto">
+                                    <span class="text-xs text-gray-400 uppercase">Starts from</span>
+                                    <p class="text-xl font-serif italic text-studio-gold">IDR 1.500K</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="navigateTo('services')" class="bg-white text-black px-8 py-3 text-xs uppercase tracking-widest hover:bg-studio-gold hover:text-white transition-all duration-300 shadow-lg font-bold">
+                            See Full Pricelist
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CONTACT SPOILER -->
+                <div class="relative py-32 px-6 md:px-12 overflow-hidden">
+                    <!-- Background Image for Contact Spoiler -->
+                    <div class="absolute inset-0 z-0">
+                        <!-- REDUCED OPACITY HERE: bg-studio-black/60 instead of 80 -->
+                        <div class="absolute inset-0 bg-studio-black/60 z-10"></div> 
+                        <img src="4.jpg" class="w-full h-full object-cover grayscale opacity-60">
+                    </div>
+                    
+                    <div class="relative z-10 max-w-4xl mx-auto text-center">
+                        <h2 class="font-serif text-4xl md:text-6xl italic mb-6 drop-shadow-lg">Ready to make memories?</h2>
+                        <p class="text-gray-300 font-sans text-sm md:text-base max-w-lg mx-auto mb-10 leading-relaxed font-medium drop-shadow-md">
+                            Jadwal kami terisi dengan cepat. Amankan tanggal spesial Anda sekarang dan biarkan kami mengabadikan ceritanya.
+                        </p>
+                        <div class="flex flex-col md:flex-row justify-center gap-6">
+                            <button onclick="navigateTo('contact')" class="border border-white/60 px-8 py-4 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300 backdrop-blur-sm font-bold shadow-lg">
+                                Contact Us
+                            </button>
+                            <button onclick="window.open('https://www.whatsapp.com/catalog/62881026774401/?app_absent=0', '_blank')" class="bg-studio-gold text-black px-8 py-4 text-xs uppercase tracking-widest hover:bg-white transition-all duration-300 font-bold shadow-lg">
+                                Chat WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spacer for fixed footer -->
+                <div class="h-24 bg-studio-black"></div>
+            </div>
+        </section>
+
+        <!-- 2. PORTFOLIO PAGE -->
+        <section id="portfolio" class="page-section">
+            <!-- BACKGROUND FOR PORTFOLIO -->
+            <div class="fixed inset-0 z-0">
+                <!-- REDUCED OPACITY HERE: bg-studio-black/70 instead of 90 -->
+                <div class="absolute inset-0 bg-studio-black/70 z-10"></div>
+                <img src="5.jpg" class="w-full h-full object-cover opacity-60 grayscale" alt="Portfolio BG">
+            </div>
+
+            <div class="relative z-10 px-6 md:px-12 pb-24 pt-10"> <!-- Content Wrapper -->
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-10 mt-10">
+                        <span class="text-xs text-studio-gold tracking-widest uppercase mb-2 block font-bold drop-shadow-md">Selected Works</span>
+                        <h2 class="font-serif text-4xl italic drop-shadow-md">Curated Moments</h2>
+                        <p class="text-gray-400 font-sans text-xs mt-2 font-medium">Click on any image to view the full story.</p>
+                    </div>
+
+                    <!-- CATEGORY FILTER -->
+                    <div class="flex flex-wrap justify-center gap-6 mb-12">
+                        <button onclick="filterSelection('all')" class="filter-btn active text-xs font-sans uppercase tracking-widest text-gray-400 hover:text-white border-b border-transparent pb-1 transition-all font-medium">All</button>
+                        <button onclick="filterSelection('graduation')" class="filter-btn text-xs font-sans uppercase tracking-widest text-gray-400 hover:text-white border-b border-transparent pb-1 transition-all font-medium">Graduation</button>
+                        <button onclick="filterSelection('wedding')" class="filter-btn text-xs font-sans uppercase tracking-widest text-gray-400 hover:text-white border-b border-transparent pb-1 transition-all font-medium">Wedding</button>
+                        <button onclick="filterSelection('editorial')" class="filter-btn text-xs font-sans uppercase tracking-widest text-gray-400 hover:text-white border-b border-transparent pb-1 transition-all font-medium">Travel</button>
+                    </div>
+
+                    <!-- UNIFORM PORTRAIT GRID (3:4) -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8" id="portfolio-grid">
+                        <!-- Items populated via JS or static HTML -->
+                        <div class="portfolio-item group cursor-pointer relative bg-gray-800 aspect-[3/4]" data-category="editorial" onclick="openProject('editorial1')">
+                            <img src="1.jpg" class="w-full h-full object-cover block">
+                            <div class="absolute inset-0 portfolio-overlay flex items-center justify-center">
+                                <span class="font-serif italic text-2xl text-white">Peler Grad</span>
+                            </div>
+                        </div>
+                        <div class="portfolio-item group cursor-pointer relative bg-gray-800 aspect-[3/4]" data-category="graduation" onclick="openProject('grad1')">
+                            <img src="2.jpg" class="w-full h-full object-cover block">
+                            <div class="absolute inset-0 portfolio-overlay flex items-center justify-center">
+                                <span class="font-serif italic text-2xl text-white">Tata's Grad</span>
+                            </div>
+                        </div>
+                        <div class="portfolio-item group cursor-pointer relative bg-gray-800 aspect-[3/4]" data-category="wedding" onclick="openProject('wedding1')">
+                            <img src="3.jpg" class="w-full h-full object-cover block">
+                            <div class="absolute inset-0 portfolio-overlay flex items-center justify-center">
+                                <span class="font-serif italic text-2xl text-white">Tedi Grad</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-16">
+                        <p class="text-xs text-gray-400 font-sans uppercase tracking-widest font-medium">End of selection</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SERVICES PAGE -->
+        <section id="services" class="page-section">
+            <!-- BACKGROUND FOR SERVICES -->
+            <div class="fixed inset-0 z-0">
+                <!-- REDUCED OPACITY HERE: bg-studio-black/70 instead of 85 -->
+                <div class="absolute inset-0 bg-studio-black/70 z-10"></div> 
+                <img src="2.jpg" class="w-full h-full object-cover opacity-60 grayscale" alt="Services BG">
+            </div>
+
+            <div class="relative z-10 px-6 md:px-12 pb-24 pt-10"> <!-- Content Wrapper -->
+                <div class="max-w-4xl mx-auto mt-10">
+                    <div class="flex items-baseline justify-between border-b border-white/20 pb-8 mb-12">
+                        <h2 class="font-serif text-4xl italic drop-shadow-md">Pricelist</h2>
+                        <p class="text-xs font-sans text-gray-300 uppercase tracking-widest font-bold drop-shadow-md">Aksara Picture</p>
+                    </div>
+
+                    <div class="space-y-12">
+                        <!-- Service 1: Self Session -->
+                        <div class="flex flex-col md:flex-row justify-between gap-6 group">
+                            <div class="md:w-2/3">
+                                <h3 class="text-2xl font-serif mb-2 group-hover:text-studio-gold transition-colors drop-shadow-md">Self Session</h3>
+                                <p class="text-gray-300 font-sans text-sm leading-relaxed mb-4 font-medium">
+                                    1 Graduate and Family
+                                </p>
+                            </div>
+                            <div class="md:w-1/3 text-left md:text-right font-serif text-xl italic drop-shadow-md">
+                                IDR 350.000
+                            </div>
+                        </div>
+
+                        <hr class="border-white/10">
+
+                        <!-- Service 2: Couple Session -->
+                        <div class="flex flex-col md:flex-row justify-between gap-6 group">
+                            <div class="md:w-2/3">
+                                <h3 class="text-2xl font-serif mb-2 group-hover:text-studio-gold transition-colors drop-shadow-md">Couple Session</h3>
+                                <p class="text-gray-300 font-sans text-sm leading-relaxed mb-4 font-medium">
+                                    2 Graduate and Family
+                                </p>
+                            </div>
+                            <div class="md:w-1/3 text-left md:text-right font-serif text-xl italic drop-shadow-md">
+                                IDR 500.000
+                            </div>
+                        </div>
+
+                        <hr class="border-white/10">
+
+                        <!-- Service 3: Group Sessions -->
+                        <div class="flex flex-col md:flex-row justify-between gap-6 group">
+                            <div class="md:w-2/3">
+                                <h3 class="text-2xl font-serif mb-2 group-hover:text-studio-gold transition-colors drop-shadow-md">Group Sessions</h3>
+                                <p class="text-gray-300 font-sans text-sm leading-relaxed mb-4 font-medium">
+                                    Max 5 Graduate without family
+                                </p>
+                            </div>
+                            <div class="md:w-1/3 text-left md:text-right font-serif text-xl italic drop-shadow-md">
+                                IDR 550.000
+                            </div>
+                        </div>
+
+                        <hr class="border-white/10">
+
+                        <!-- Service 5: MUA PACKAGE -->
+                        <div class="flex flex-col md:flex-row justify-between gap-6 group">
+                            <div class="md:w-2/3">
+                                <h3 class="text-2xl font-serif mb-2 group-hover:text-studio-gold transition-colors drop-shadow-md">MUA Package</h3>
+                                <p class="text-gray-300 font-sans text-sm leading-relaxed mb-1 font-medium">
+                                    Aksara x <span class="text-white italic">Yeonggi by el</span>
+                                </p>
+                                <p class="text-xs text-studio-gold font-sans uppercase tracking-wide font-bold">
+                                    Special collaboration for your graduation moment
+                                </p>
+                            </div>
+                            <div class="md:w-1/3 text-left md:text-right font-serif text-xl italic flex flex-col items-start md:items-end drop-shadow-md">
+                                <span class="text-gray-400 text-sm line-through decoration-studio-gold">IDR 600.000</span>
+                                <span class="text-white">IDR 550.000</span>
+                            </div>
+                        </div>
+
+
+                        <hr class="border-white/10">
+
+                        <!-- Service 4: SPECIAL CONTENT PACKAGE -->
+                        <div class="flex flex-col gap-8 group py-4">
+                            <div class="w-full">
+                                <!-- HEADER SPECIAL -->
+                                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
+                                    <div>
+                                        <div class="flex items-center gap-3 mb-1">
+                                            <h3 class="text-2xl font-serif text-studio-gold drop-shadow-md">Special Content: Framora Story</h3>
+                                            <span class="bg-white text-black text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm shadow-md">Opening Promo</span>
+                                        </div>
+                                        <p class="text-gray-300 font-sans text-sm italic font-medium">Photographer & Content Creator Bundling (With Aksara)</p>
+                                    </div>
+                                    <div class="text-right hidden md:block">
+                                        <span class="text-xs text-gray-300 uppercase tracking-widest block border border-gray-400 px-3 py-1 rounded-full font-bold backdrop-blur-sm">Limited Slot</span>
+                                    </div>
+                                </div>
+
+                                <!-- SUB-PACKAGES GRID -->
+                                <div class="grid grid-cols-1 gap-6">
+                                    
+                                    <!-- PACKAGE 1: SELF -->
+                                    <div class="bg-black/60 p-6 border border-white/10 hover:border-studio-gold transition-colors rounded-lg backdrop-blur-sm shadow-lg">
+                                        <div class="flex justify-between items-start mb-6 border-b border-white/10 pb-4">
+                                            <div>
+                                                <h4 class="text-xl font-serif text-white">Self Session</h4>
+                                                <p class="text-xs text-gray-400 uppercase tracking-wide mt-1 font-medium">1 Graduate (with family)</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="block text-2xl font-serif italic text-studio-gold">IDR 480.000</span>
+                                                <span class="text-[10px] text-gray-400 uppercase tracking-wide">Bundle Price</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                                            <div>
+                                                <span class="block text-xs font-bold text-gray-300 mb-3 uppercase tracking-wider flex justify-between">
+                                                    Photographer 
+                                                    <span class="text-gray-500 font-normal normal-case">IDR 350k value</span>
+                                                </span>
+                                                <ul class="text-gray-400 text-xs space-y-2 list-none font-medium">
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 1 Photographer</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 30 Edited Photos</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> Multiple Spot (Campus Only)</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> All Files via Google Drive</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <span class="block text-xs font-bold text-gray-300 mb-3 uppercase tracking-wider flex justify-between">
+                                                    Content Creator 
+                                                    <span class="text-gray-500 font-normal normal-case">IDR 150k value</span>
+                                                </span>
+                                                <ul class="text-gray-400 text-xs space-y-2 list-none font-medium">
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 2-4 Story Real Time</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 1 Video Highlight</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 1 Video TikTok/Reels (By Request)</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> Unlimited RAW Video (GDrive)</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- PACKAGE 2: COUPLE -->
+                                    <div class="bg-black/60 p-6 border border-white/10 hover:border-studio-gold transition-colors rounded-lg backdrop-blur-sm shadow-lg">
+                                        <div class="flex justify-between items-start mb-6 border-b border-white/10 pb-4">
+                                            <div>
+                                                <h4 class="text-xl font-serif text-white">Couple Session</h4>
+                                                <p class="text-xs text-gray-400 uppercase tracking-wide mt-1 font-medium">2 Graduates (with family)</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="block text-2xl font-serif italic text-studio-gold">IDR 700.000</span>
+                                                <span class="text-[10px] text-gray-400 uppercase tracking-wide">Bundle Price</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                                            <div>
+                                                <span class="block text-xs font-bold text-gray-300 mb-3 uppercase tracking-wider flex justify-between">
+                                                    Photographer 
+                                                    <span class="text-gray-500 font-normal normal-case">IDR 500k value</span>
+                                                </span>
+                                                <ul class="text-gray-400 text-xs space-y-2 list-none font-medium">
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 1 Photographer</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 30 Edited Photos</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> Multiple Spot (Campus Only)</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> All Files via Google Drive</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <span class="block text-xs font-bold text-gray-300 mb-3 uppercase tracking-wider flex justify-between">
+                                                    Content Creator 
+                                                    <span class="text-gray-500 font-normal normal-case">IDR 250k value</span>
+                                                </span>
+                                                <ul class="text-gray-400 text-xs space-y-2 list-none font-medium">
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 4-6 Story Real Time</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 1 Video Highlight</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 2 Video TikTok/Reels (By Request)</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> Unlimited RAW Video (GDrive)</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- PACKAGE 3: GROUP -->
+                                    <div class="bg-black/60 p-6 border border-white/10 hover:border-studio-gold transition-colors rounded-lg backdrop-blur-sm shadow-lg">
+                                        <div class="flex justify-between items-start mb-6 border-b border-white/10 pb-4">
+                                            <div>
+                                                <h4 class="text-xl font-serif text-white">Group Session</h4>
+                                                <p class="text-xs text-gray-400 uppercase tracking-wide mt-1 font-medium">3-5 Graduates (Group Only)</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="block text-2xl font-serif italic text-studio-gold">IDR 950.000</span>
+                                                <span class="text-[10px] text-gray-400 uppercase tracking-wide">Bundle Price</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                                            <div>
+                                                <span class="block text-xs font-bold text-gray-300 mb-3 uppercase tracking-wider flex justify-between">
+                                                    Photographer 
+                                                    <span class="text-gray-500 font-normal normal-case">IDR 550k value</span>
+                                                </span>
+                                                <ul class="text-gray-400 text-xs space-y-2 list-none font-medium">
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 1 Photographer</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> Max 5 Grads (No Family)</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 30 Edited Photos</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> Extra 50k/person</li>
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <span class="block text-xs font-bold text-gray-300 mb-3 uppercase tracking-wider flex justify-between">
+                                                    Content Creator 
+                                                    <span class="text-gray-500 font-normal normal-case">IDR 500k value</span>
+                                                </span>
+                                                <ul class="text-gray-400 text-xs space-y-2 list-none font-medium">
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 2 Story Real Time/Person</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 3-5 Video Highlight</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> 3-5 Video TikTok/Reels</li>
+                                                    <li class="flex gap-2"><i class="fa-solid fa-check text-[10px] mt-1 text-gray-500"></i> Extra 50k/person</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="border-white/10">
+
+
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. CONTACT PAGE -->
+        <section id="contact" class="page-section">
+            <!-- BACKGROUND FOR CONTACT -->
+            <div class="fixed inset-0 z-0">
+                <!-- REDUCED OPACITY HERE: bg-studio-black/70 instead of 85 -->
+                <div class="absolute inset-0 bg-studio-black/70 z-10"></div>
+                <img src="1.jpg" class="w-full h-full object-cover opacity-60 grayscale" alt="Contact BG">
+            </div>
+
+            <div class="relative z-10 px-6 md:px-12 pb-24 pt-10"> <!-- Content Wrapper -->
+                <div class="max-w-4xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-16">
+                    
+                    <!-- Info -->
+                    <div>
+                        <span class="text-xs text-studio-gold tracking-widest uppercase mb-4 block font-bold drop-shadow-md">Get in Touch</span>
+                        <h2 class="font-serif text-4xl italic mb-8 drop-shadow-md">Let's Create.</h2>
+                        <p class="text-gray-300 font-sans text-gray-400 mb-8 leading-relaxed font-medium drop-shadow-md">
+                            Kami menerima booking terbatas setiap bulannya untuk menjaga kualitas. Silakan hubungi kami untuk ketersediaan jadwal.
+                        </p>
+                        
+                        <div class="space-y-4 font-sans text-sm">
+                            <div>
+                                <span class="block text-xs text-gray-400 uppercase tracking-widest mb-1 font-bold">Studio</span>
+                                <p class="text-white font-medium">Based In Malang, Jawa Timur</p>
+                            </div>
+                            <div>
+                                <span class="block text-xs text-gray-400 uppercase tracking-widest mb-1 font-bold">Email</span>
+                                <p class="text-white font-medium">aksarapicture@gmail.com</p>
+                            </div>
+                            <div>
+                                <span class="block text-xs text-gray-400 uppercase tracking-widest mb-1 font-bold">Social</span>
+                                <div class="flex gap-4 mt-2">
+                                    <a href="https://www.instagram.com/aksarapicture.mlg/" class="hover:text-studio-gold transition-colors text-white"><i class="fa-brands fa-instagram"></i></a>
+                                    <a href="https://www.tiktok.com/@aksarapicturemlg" class="hover:text-studio-gold transition-colors text-white"><i class="fa-brands fa-tiktok"></i></a>
+                                    <a href="https://api.whatsapp.com/send/?phone=62881026774401&text&type=phone_number&app_absent=0" class="hover:text-studio-gold transition-colors text-white"><i class="fa-brands fa-whatsapp"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form -->
+                    <div class="bg-black/60 p-8 border border-white/10 backdrop-blur-sm rounded-lg shadow-xl">
+                        <form onsubmit="handleWA(event)" class="space-y-6">
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">Name</label>
+                                <input type="text" class="w-full bg-transparent border-b border-gray-500 py-2 text-white focus:border-white focus:outline-none transition-colors font-medium" required>
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">Service Type</label>
+                                <select class="w-full bg-transparent border-b border-gray-500 py-2 text-white focus:border-white focus:outline-none transition-colors appearance-none font-medium">
+                                    <option class="bg-studio-black">Self Session</option>
+                                    <option class="bg-studio-black">Couple Session</option>
+                                    <option class="bg-studio-black">Group Session</option>
+                                    <option class="bg-studio-black">MUA Package</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">Date</label>
+                                <input type="date" class="w-full bg-transparent border-b border-gray-500 py-2 text-white focus:border-white focus:outline-none transition-colors font-medium">
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2 font-bold">Message</label>
+                                <textarea rows="3" class="w-full bg-transparent border-b border-gray-500 py-2 text-white focus:border-white focus:outline-none transition-colors font-medium"></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-white text-black py-4 text-xs uppercase tracking-widest hover:bg-studio-gold hover:text-white transition-all duration-300 font-bold shadow-lg">
+                                Send via WhatsApp
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- TERMS MODAL (HIDDEN) -->
+    <div id="terms-modal" class="fixed inset-0 z-[60] hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleTerms()"></div>
+        
+        <!-- Modal Content -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl h-[80vh] bg-studio-gray border border-white/10 rounded-xl shadow-2xl overflow-hidden flex flex-col">
+            
+            <!-- Header -->
+            <div class="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-studio-black">
+                <h3 class="font-serif text-xl italic text-studio-gold">Prosedur, Syarat & Ketentuan</h3>
+                <button onclick="toggleTerms()" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="p-8 overflow-y-auto font-sans text-sm text-gray-300 leading-relaxed space-y-8 custom-scrollbar">
+                <!-- Section 1 -->
+                <div>
+                    <h4 class="text-white font-bold uppercase tracking-widest mb-4 border-l-2 border-studio-gold pl-3">Syarat & Ketentuan Pemesanan</h4>
+                    <ol class="list-decimal list-outside pl-5 space-y-4">
+                        <li>
+                            <strong class="text-white block mb-1">Cek Jadwal Tersedia</strong>
+                            Pastikan tanggal dan jam sesi yang diinginkan masih available sebelum melakukan pemesanan.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Isi Form & Bayar DP</strong>
+                            Lengkapi form booking dan lakukan pembayaran DP sebesar 50% ke rekening:
+                            <div class="mt-2 bg-black/30 p-3 rounded border border-white/5 font-mono text-studio-gold">
+                                BCA 3850870917<br>
+                                a.n. Tedi Juniardi
+                            </div>
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Konfirmasi Jadwal Akhir</strong>
+                            Tim Aksara akan menghubungi H-1 untuk memastikan detail waktu dan lokasi sudah sesuai rencana.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Pelunasan Setelah Sesi</strong>
+                            Sisa pembayaran dilakukan setelah sesi foto selesai.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Ketepatan Waktu</strong>
+                            Harap datang tepat waktu, karena keterlambatan menjadi tanggung jawab klien dan tidak ada tambahan waktu sesi.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Pengiriman & Pemilihan Foto</strong>
+                            Seluruh file foto (JPEG) dikirim maksimal 1 hari setelah sesi. Client dapat memilih nomor file foto yang ingin diedit sejak softfile dikirim.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Waktu Proses Editing</strong>
+                            Proses editing memakan waktu maksimal 5 hari kerja.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Penyimpanan File</strong>
+                            File foto disimpan di Google Drive maksimal 14 hari. Kehilangan file setelah masa tersebut bukan tanggung jawab kami.
+                        </li>
+                    </ol>
+                </div>
+
+                <!-- Section 2 -->
+                <div>
+                    <h4 class="text-white font-bold uppercase tracking-widest mb-4 border-l-2 border-studio-gold pl-3">Ketentuan Tambahan</h4>
+                    <ul class="list-disc list-outside pl-5 space-y-4">
+                        <li>
+                            <strong class="text-white block mb-1">Non-Refundable DP</strong>
+                            DP yang sudah dibayarkan tidak dapat dikembalikan dengan alasan apapun.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Konfirmasi Jadwal</strong>
+                            Jadwal pemotretan wajib dikonfirmasi ulang untuk menghindari perubahan mendadak.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Waktu Mulai</strong>
+                            Tim Aksara akan memulai pemotretan tepat waktu sesuai kesepakatan.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Natural Editing</strong>
+                            Editing hanya sebatas warna, tone, dan pencahayaan. Tidak menerima request perubahan bentuk tubuh.
+                        </li>
+                        <li>
+                            <strong class="text-white block mb-1">Biaya Transportasi</strong>
+                            Pemotretan luar kota (Kediri, Tulungagung, Surabaya) dikenakan biaya transport Rp 50.000.
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECT DETAIL MODAL (NEW) -->
+    <div id="project-modal" class="fixed inset-0 z-[70] hidden bg-black overflow-y-auto">
+        <!-- Close Button -->
+        <button onclick="closeProject()" class="fixed top-6 right-6 z-[80] text-white hover:text-studio-gold transition-colors bg-black/50 p-2 rounded-full backdrop-blur-sm">
+            <i class="fa-solid fa-xmark text-2xl"></i>
+        </button>
+
+        <!-- Content -->
+        <div class="min-h-screen p-6 md:p-12 pb-24">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 pt-10 animate-fade-in-up">
+                    <span id="modal-category" class="text-xs text-studio-gold tracking-widest uppercase mb-4 block">Editorial</span>
+                    <h2 id="modal-title" class="font-serif text-4xl md:text-6xl italic text-white">Project Title</h2>
+                </div>
+
+                <!-- Dynamic Grid for Sub-photos (Mixed Landscape & Portrait) -->
+                <div id="modal-gallery" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+                    <!-- Images will be injected here via JS -->
+                </div>
+                
+                <div class="text-center mt-24">
+                    <button onclick="closeProject()" class="text-xs uppercase tracking-widest text-gray-500 hover:text-white border-b border-transparent hover:border-white pb-1 transition-all">Back to Portfolio</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER (Global - Modified) -->
+    <footer class="fixed bottom-0 w-full px-8 py-4 flex justify-between items-end z-40 bg-gradient-to-t from-studio-black to-transparent pointer-events-auto">
+        <div class="flex gap-6 text-[10px] uppercase tracking-widest font-sans text-gray-400">
+            <span>© 2026 Aksarapicture.mlg</span>
+            <button onclick="toggleTerms()" class="hover:text-white transition-colors border-b border-transparent hover:border-white">Syarat & Ketentuan</button>
+        </div>
+        <span class="text-[10px] text-gray-400 uppercase tracking-widest font-sans hidden md:block">Malang • Surabaya • Kediri</span>
+    </footer>
+
+    <script>
+        // --- DATA PROJECTS (Mock Data) ---
+        const projects = {
+            'editorial1': {
+                title: "Editorial Vol. 1",
+                category: "Editorial",
+                images: [
+                    { src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1964", aspect: "aspect-[3/4]" }, // Portrait
+                    { src: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?q=80&w=2070", aspect: "aspect-[4/3]" }, // Landscape
+                    { src: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000", aspect: "aspect-[3/4]" }, // Portrait
+                    { src: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=2073", aspect: "aspect-[4/3]" }  // Landscape
+                ]
+            },
+            'grad1': {
+                title: "Sarah's Graduation",
+                category: "Graduation",
+                images: [
+                    { src: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1000", aspect: "aspect-[3/4]" },
+                    { src: "https://images.unsplash.com/photo-1627552245715-77d79bbf6fe2?q=80&w=1000", aspect: "aspect-[3/4]" },
+                    { src: "https://images.unsplash.com/photo-1551847677-dc82d764e1eb?q=80&w=1000", aspect: "aspect-[4/3]" }
+                ]
+            },
+            'wedding1': {
+                title: "Intimate Wedding",
+                category: "Wedding",
+                images: [
+                    { src: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1000", aspect: "aspect-[3/4]" },
+                    { src: "https://images.unsplash.com/photo-1511285560982-1356c11d4606?q=80&w=2076", aspect: "aspect-[4/3]" },
+                    { src: "https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2070", aspect: "aspect-[4/3]" }
+                ]
+            },
+           
+        };
+
+        // --- PROJECT MODAL LOGIC ---
+        function openProject(projectId) {
+            const project = projects[projectId];
+            if (!project) return;
+
+            // Set Content
+            document.getElementById('modal-title').textContent = project.title;
+            document.getElementById('modal-category').textContent = project.category;
+            
+            const galleryContainer = document.getElementById('modal-gallery');
+            galleryContainer.innerHTML = ''; // Clear existing
+
+            project.images.forEach(img => {
+                const div = document.createElement('div');
+                div.className = `w-full ${img.aspect} bg-gray-800 overflow-hidden relative`;
+                div.innerHTML = `<img src="${img.src}" class="w-full h-full object-cover">`;
+                galleryContainer.appendChild(div);
+            });
+
+            // Show Modal
+            const modal = document.getElementById('project-modal');
+            modal.classList.remove('hidden');
+            gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.4 });
+            gsap.fromTo("#modal-gallery > div", { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, delay: 0.2 });
+        }
+
+        function closeProject() {
+            const modal = document.getElementById('project-modal');
+            gsap.to(modal, { opacity: 0, duration: 0.3, onComplete: () => modal.classList.add('hidden') });
+        }
+
+        // --- PAGE NAVIGATION LOGIC ---
+        function navigateTo(pageId) {
+            // 1. Update Active Link UI
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            const activeLink = document.getElementById(`link-${pageId}`);
+            if(activeLink) activeLink.classList.add('active');
+
+            // 2. Hide All Sections
+            const sections = document.querySelectorAll('.page-section');
+            const targetSection = document.getElementById(pageId);
+            const currentSection = document.querySelector('.page-section.active');
+
+            if(currentSection === targetSection) return; // Do nothing if same page
+
+            // GSAP Transition
+            if(currentSection) {
+                gsap.to(currentSection, {
+                    opacity: 0,
+                    duration: 0.3,
+                    onComplete: () => {
+                        currentSection.classList.remove('active');
+                        
+                        // Show Next Section
+                        targetSection.classList.add('active');
+                        window.scrollTo(0,0); // Reset scroll
+                        
+                        gsap.fromTo(targetSection, 
+                            { opacity: 0, y: 20 },
+                            { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+                        );
+                    }
+                });
+            } else {
+                // Initial Load
+                targetSection.classList.add('active');
+                gsap.fromTo(targetSection, 
+                    { opacity: 0 },
+                    { opacity: 1, duration: 0.5 }
+                );
+            }
+        }
+
+        // --- FILTER PORTFOLIO LOGIC ---
+        function filterSelection(category) {
+            const items = document.querySelectorAll('.portfolio-item');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            // Update Active Button
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase() === category || (category === 'all' && btn.textContent.toLowerCase() === 'all')) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Filter Logic with GSAP
+            items.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    gsap.to(item, { display: 'block', opacity: 1, scale: 1, duration: 0.4 });
+                } else {
+                    gsap.to(item, { opacity: 0, scale: 0.9, duration: 0.3, onComplete: () => { item.style.display = 'none'; }});
+                }
+            });
+        }
+
+        // --- MOBILE MENU LOGIC ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            
+            if (menu.classList.contains('pointer-events-none')) {
+                // OPEN MENU
+                menu.classList.remove('pointer-events-none', 'opacity-0');
+                document.body.style.overflow = 'hidden'; // Lock Body Scroll
+                if(icon) {
+                    icon.classList.remove('fa-bars-staggered');
+                    icon.classList.add('fa-xmark');
+                    icon.style.transform = 'rotate(90deg)';
+                }
+            } else {
+                // CLOSE MENU
+                menu.classList.add('pointer-events-none', 'opacity-0');
+                document.body.style.overflow = ''; // Unlock Body Scroll
+                if(icon) {
+                    icon.classList.remove('fa-xmark');
+                    icon.classList.add('fa-bars-staggered');
+                    icon.style.transform = 'rotate(0deg)';
+                }
+            }
+        }
+        
+        // --- TERMS MODAL LOGIC ---
+        function toggleTerms() {
+            const modal = document.getElementById('terms-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                gsap.fromTo(modal.children[1], { scale: 0.95, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: "power2.out" });
+            } else {
+                gsap.to(modal.children[1], { scale: 0.95, opacity: 0, duration: 0.2, onComplete: () => modal.classList.add('hidden') });
+            }
+        }
+
+        // --- WHATSAPP HANDLER ---
+        function handleWA(e) {
+            e.preventDefault();
+            const inputs = e.target.elements;
+            const text = `Halo Aksara, saya ${inputs[0].value} ingin booking untuk ${inputs[1].value} tanggal ${inputs[2].value}. Note: ${inputs[3].value}`;
+            window.open(`https://wa.me/62881026774401?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // --- BACKGROUND SLIDESHOW LOGIC ---
+        function startHeroSlideshow() {
+            const slides = document.querySelectorAll('.hero-slide');
+            let currentSlide = 0;
+            
+            // Initial State
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                if (index === 0) slide.classList.add('active');
+            });
+
+            setInterval(() => {
+                // Fade Out Current
+                slides[currentSlide].classList.remove('active');
+                
+                // Advance Index
+                currentSlide = (currentSlide + 1) % slides.length;
+                
+                // Fade In Next
+                slides[currentSlide].classList.add('active');
+            }, 5000); // Change every 5 seconds
+        }
+
+        // Initialize Home Animation & Slideshow
+        window.addEventListener('load', () => {
+            gsap.fromTo("#home", { opacity: 0 }, { opacity: 1, duration: 1 });
+            startHeroSlideshow();
+        });
+    </script>
+</body>
+</html>
