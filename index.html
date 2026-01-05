@@ -209,14 +209,14 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div class="group cursor-pointer" onclick="navigateTo('portfolio')">
                                 <div class="overflow-hidden aspect-[4/3] mb-4 border border-white/20 shadow-xl">
-                                    <img src="4.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                    <img src="4.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
                                 </div>
                                 <h3 class="font-serif text-xl italic text-gray-200 group-hover:text-white transition-colors drop-shadow-md">Tata Grads</h3>
                                 <p class="text-xs text-gray-400 uppercase tracking-widest mt-1 font-medium">Family Session</p>
                             </div>
                             <div class="group cursor-pointer" onclick="navigateTo('portfolio')">
                                 <div class="overflow-hidden aspect-[4/3] mb-4 border border-white/20 shadow-xl">
-                                    <img src="6.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                    <img src="6.webp" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy">
                                 </div>
                                 <h3 class="font-serif text-xl italic text-gray-200 group-hover:text-white transition-colors drop-shadow-md">Tedi Grads</h3>
                                 <p class="text-xs text-gray-400 uppercase tracking-widest mt-1 font-medium">Family Session</p>
@@ -317,31 +317,31 @@
 
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8" id="portfolio-grid">
                         <div class="portfolio-item group cursor-pointer relative bg-gray-800 aspect-[3/4]" data-category="graduation" onclick="openProject('grad1')">
-                            <img src="hilman/hilman (8).webp" class="w-full h-full object-cover block">
+                            <img src="hilman/hilman (8).webp" class="w-full h-full object-cover block" loading="lazy" decoding="async">
                             <div class="absolute inset-0 portfolio-overlay flex items-center justify-center">
                                 <span class="font-serif italic text-2xl text-white">Hilman's Grad</span>
                             </div>
                         </div>
                         <div class="portfolio-item group cursor-pointer relative bg-gray-800 aspect-[3/4]" data-category="graduation" onclick="openProject('grad2')">
-                            <img src="hikmah/hikmah (10).webp" class="w-full h-full object-cover block">
+                            <img src="hikmah/hikmah (10).webp" class="w-full h-full object-cover block" loading="lazy" decoding="async">
                             <div class="absolute inset-0 portfolio-overlay flex items-center justify-center">
                                 <span class="font-serif italic text-2xl text-white">Hikmah's Grad</span>
                             </div>
                         </div>
                         <div class="portfolio-item group cursor-pointer relative bg-gray-800 aspect-[3/4]" data-category="graduation" onclick="openProject('grad3')">
-                            <img src="Diva/diva (9).webp" class="w-full h-full object-cover block">
+                            <img src="Diva/diva (9).webp" class="w-full h-full object-cover block" loading="lazy" decoding="async">
                             <div class="absolute inset-0 portfolio-overlay flex items-center justify-center">
                                 <span class="font-serif italic text-2xl text-white">Diva's Grad</span>
                             </div>
                         </div>
                         <div class="portfolio-item group cursor-pointer relative bg-gray-800 aspect-[3/4]" data-category="graduation" onclick="openProject('grad4')">
-                            <img src="iola/iola (6).webp" class="w-full h-full object-cover block">
+                            <img src="iola/iola (6).webp" class="w-full h-full object-cover block" loading="lazy" decoding="async">
                             <div class="absolute inset-0 portfolio-overlay flex items-center justify-center">
                                 <span class="font-serif italic text-2xl text-white">Iola's Grad</span>
                             </div>
                         </div>
                         <div class="portfolio-item group cursor-pointer relative bg-gray-800 aspect-[3/4]" data-category="graduation" onclick="openProject('grad5')">
-                            <img src="fadel/fadel (10).webp" class="w-full h-full object-cover block">
+                            <img src="fadel/fadel (10).webp" class="w-full h-full object-cover block" loading="lazy" decoding="async">
                             <div class="absolute inset-0 portfolio-overlay flex items-center justify-center">
                                 <span class="font-serif italic text-2xl text-white">Fadel's Grad</span>
                             </div>
@@ -850,7 +850,7 @@
            
         };
 
-        // --- PROJECT MODAL LOGIC ---
+        // --- UPDATED: PROJECT MODAL LOGIC (Optimized) ---
         function openProject(projectId) {
             const project = projects[projectId];
             if (!project) return;
@@ -860,14 +860,22 @@
             document.getElementById('modal-category').textContent = project.category;
             
             const galleryContainer = document.getElementById('modal-gallery');
-            galleryContainer.innerHTML = ''; // Clear existing
+            
+            // Optimization: Use DocumentFragment
+            const fragment = document.createDocumentFragment();
 
             project.images.forEach(img => {
                 const div = document.createElement('div');
                 div.className = `w-full ${img.aspect} bg-gray-800 overflow-hidden relative`;
-                div.innerHTML = `<img src="${img.src}" class="w-full h-full object-cover">`;
-                galleryContainer.appendChild(div);
+                
+                // Optimization: Added loading="lazy" & decoding="async" for modal images
+                div.innerHTML = `<img src="${img.src}" class="w-full h-full object-cover" loading="lazy" decoding="async">`;
+                fragment.appendChild(div);
             });
+
+            // Clean & Append Once
+            galleryContainer.innerHTML = ''; 
+            galleryContainer.appendChild(fragment);
 
             // Show Modal
             const modal = document.getElementById('project-modal');
