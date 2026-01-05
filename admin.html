@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aksara Admin Panel</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        'studio-black': '#0a0a0a',
+                        'studio-gray': '#1c1c1c',
+                        'studio-white': '#f5f5f5',
+                        'studio-gold': '#d4af37',
+                    }
+                }
+            }
+        };
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+</head>
+<body class="bg-studio-black text-studio-white font-sans min-h-screen flex flex-col items-center justify-center p-4 md:p-10">
+
+    <div id="loginScreen" class="w-full max-w-md bg-studio-gray/50 border border-white/10 backdrop-blur-md p-8 rounded-xl shadow-2xl animate-fade-in">
+        <div class="text-center mb-8">
+            <h1 class="font-serif text-3xl italic text-studio-gold mb-2">Aksara Admin.</h1>
+            <p class="text-xs text-gray-400 uppercase tracking-widest">Secure Access Only</p>
+        </div>
+        
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-bold">Email Address</label>
+                <input type="email" id="emailInput" class="w-full bg-studio-black border border-white/10 py-3 px-4 text-white focus:border-studio-gold focus:outline-none transition-colors rounded-lg placeholder-gray-700" placeholder="admin@aksarapicture.com">
+            </div>
+            
+            <button id="btnLogin" onclick="handleLogin()" class="w-full bg-studio-gold text-black py-3 px-4 text-xs uppercase tracking-widest font-bold hover:bg-white transition-all duration-300 rounded-lg shadow-lg">
+                Send Magic Link
+            </button>
+        </div>
+        <p id="loginStatus" class="text-center text-xs mt-6 text-gray-500 font-medium"></p>
+    </div>
+
+    <div id="uploadPanel" class="w-full max-w-5xl space-y-8 hidden animate-fade-in pb-20">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/10 pb-6">
+            <div>
+                <h1 class="font-serif text-3xl md:text-4xl italic text-white">Dashboard</h1>
+                <p class="text-xs text-studio-gold uppercase tracking-widest mt-1">Manage Portfolio Content</p>
+            </div>
+            <button onclick="handleLogout()" class="text-xs text-red-400 hover:text-white border border-red-400/30 hover:border-red-400 px-4 py-2 rounded-full transition-all">
+                <i class="fa-solid fa-power-off mr-2"></i> Logout
+            </button>
+        </div>
+
+        <div class="bg-studio-gray/30 border border-white/5 p-6 md:p-8 rounded-xl">
+            <h2 class="font-serif text-2xl italic mb-6 text-gray-200">Upload Project</h2>
+            <form id="uploadForm" class="space-y-6">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-bold">Project Title</label>
+                    <input type="text" id="title" class="w-full bg-studio-black border-b border-white/20 py-3 px-4 text-white focus:border-studio-gold focus:outline-none transition-colors" placeholder="Ex: Hilman's Graduation" required>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-bold">Slug (Unique ID)</label>
+                        <input type="text" id="slug" class="w-full bg-studio-black border-b border-white/20 py-3 px-4 text-white focus:border-studio-gold focus:outline-none transition-colors" placeholder="grad-hilman" required>
+                        <p class="text-[10px] text-gray-600 mt-2 italic">*Huruf kecil & tanpa spasi (gunakan strip -)</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-bold">Category</label>
+                        <div class="relative">
+                            <select id="category" class="w-full bg-studio-black border-b border-white/20 py-3 px-4 text-white focus:border-studio-gold focus:outline-none transition-colors appearance-none cursor-pointer">
+                                <option value="Graduation">Graduation</option>
+                                <option value="Wedding">Wedding</option>
+                                <option value="Others">Others</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-500 pointer-events-none"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-dashed border-white/20 bg-studio-black/50 rounded-lg p-6 text-center hover:border-studio-gold transition-colors group">
+                    <input type="file" id="photos" multiple accept="image/*" class="hidden" onchange="updateFileName(this)">
+                    <label for="photos" class="cursor-pointer block w-full h-full">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-600 group-hover:text-studio-gold mb-3 transition-colors"></i>
+                        <p class="text-sm text-gray-300 font-medium" id="fileLabel">Click to select photos</p>
+                        <p class="text-[10px] text-gray-600 uppercase tracking-widest mt-1">Auto-detect Orientation</p>
+                    </label>
+                </div>
+
+                <button type="submit" id="btnSubmit" class="w-full bg-white text-black py-4 text-xs uppercase tracking-widest font-bold hover:bg-studio-gold hover:text-white transition-all duration-300 shadow-lg mt-4">
+                    Publish Project
+                </button>
+                
+                <p id="status" class="text-center text-xs mt-4 text-gray-500 font-medium"></p>
+            </form>
+        </div>
+
+        <div class="bg-studio-gray/30 border border-white/5 p-6 md:p-8 rounded-xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-serif text-2xl italic text-gray-200">Existing Projects</h2>
+                <button onclick="loadProjectList()" class="text-xs text-studio-gold hover:text-white uppercase tracking-widest"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
+            
+            <div class="overflow-x-auto rounded-lg border border-white/5">
+                <table class="w-full text-left text-sm text-gray-400">
+                    <thead class="bg-studio-black text-gray-500 uppercase text-[10px] tracking-widest">
+                        <tr>
+                            <th class="px-6 py-4 font-medium">Date</th>
+                            <th class="px-6 py-4 font-medium">Project</th>
+                            <th class="px-6 py-4 font-medium">Category</th>
+                            <th class="px-6 py-4 font-medium text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectTableBody" class="divide-y divide-white/5 bg-studio-gray/20">
+                        <tr><td colspan="4" class="text-center py-8 italic text-gray-600">Loading data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- UX HELPER: Show Filename ---
+        function updateFileName(input) {
+            const label = document.getElementById('fileLabel');
+            if (input.files && input.files.length > 0) {
+                label.textContent = `${input.files.length} photos selected`;
+                label.classList.add('text-studio-gold');
+            } else {
+                label.textContent = "Click to select photos";
+                label.classList.remove('text-studio-gold');
+            }
+        }
+
+        // --- CONFIG ---
+        const SUPABASE_URL = 'https://rgeshbeiweqnnkbhgoya.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZXNoYmVpd2Vxbm5rYmhnb3lhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2MzcxMTgsImV4cCI6MjA4MzIxMzExOH0.6N7jBP4C0KwHxYA8ymRT1UbN9kTyyQ2O3WV2Umvcdz4';
+        
+        let sb; 
+        try {
+            if(window.supabase) {
+                sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch(e) { console.error("Supabase Init Error:", e); }
+
+        // --- AUTH LOGIC ---
+        async function checkSession() {
+            if(!sb) return;
+            const { data: { session } } = await sb.auth.getSession();
+            if (session) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('uploadPanel').classList.remove('hidden');
+                document.getElementById('uploadPanel').classList.add('block');
+                loadProjectList(); 
+            } else {
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('uploadPanel').classList.add('hidden');
+                document.getElementById('uploadPanel').classList.remove('block');
+            }
+        }
+
+        async function handleLogin() {
+            if(!sb) return alert("Supabase Error");
+            const email = document.getElementById('emailInput').value;
+            const status = document.getElementById('loginStatus');
+            const btn = document.getElementById('btnLogin');
+            
+            if(!email) { 
+                status.textContent = "Please enter your email";
+                status.className = "text-center text-xs mt-6 text-red-400";
+                return; 
+            }
+
+            btn.disabled = true;
+            btn.textContent = "Sending...";
+
+            try {
+                const { error } = await sb.auth.signInWithOtp({ email: email });
+                if (error) throw error;
+                status.textContent = "Magic Link sent! Check your email inbox.";
+                status.className = "text-center text-xs mt-6 text-green-400 font-bold";
+            } catch (err) {
+                status.textContent = "Error: " + err.message;
+                status.className = "text-center text-xs mt-6 text-red-400";
+            } finally {
+                btn.disabled = false;
+                if(btn.textContent === "Sending...") btn.textContent = "Send Magic Link";
+            }
+        }
+
+        async function handleLogout() {
+            await sb.auth.signOut();
+            window.location.reload();
+        }
+
+        // --- HELPER: DETEKSI ORIENTASI GAMBAR ---
+        function getImageAspectRatio(file) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const aspect = img.width > img.height ? 'aspect-[4/3]' : 'aspect-[3/4]';
+                    resolve(aspect);
+                };
+                img.onerror = () => resolve('aspect-[3/4]');
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
+        // --- UPLOAD LOGIC ---
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            const status = document.getElementById('status');
+            
+            const { data: { user } } = await sb.auth.getUser();
+            if(!user) return alert("Session expired.");
+
+            btn.disabled = true;
+            btn.textContent = "UPLOADING...";
+            status.textContent = "Processing images, please wait...";
+            status.className = "text-center text-xs mt-4 text-gray-400 animate-pulse";
+
+            try {
+                const title = document.getElementById('title').value;
+                const slug = document.getElementById('slug').value;
+                const category = document.getElementById('category').value;
+                const files = document.getElementById('photos').files;
+
+                if(files.length === 0) throw new Error("Please select at least one photo.");
+
+                // Insert Project Header
+                const { data: projData, error: projError } = await sb
+                    .from('projects')
+                    .insert([{ title, slug, category }])
+                    .select();
+
+                if (projError) {
+                    if (projError.code === '23505') throw new Error("Slug '" + slug + "' already exists! Try another.");
+                    throw projError;
+                }
+                const projectId = projData[0].id;
+
+                // Upload Images Loop
+                status.textContent = `Uploading ${files.length} images...`;
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const cleanName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+                    const fileName = `${slug}/${Date.now()}-${cleanName}`;
+                    
+                    const { error: uploadError } = await sb.storage
+                        .from('portfolio-images')
+                        .upload(fileName, file);
+                    if (uploadError) throw uploadError;
+
+                    const { data: publicUrlData } = sb.storage
+                        .from('portfolio-images')
+                        .getPublicUrl(fileName);
+
+                    const detectedAspect = await getImageAspectRatio(file);
+
+                    await sb.from('project_images').insert([{ 
+                        project_id: projectId, 
+                        image_url: publicUrlData.publicUrl,
+                        aspect_ratio: detectedAspect
+                    }]);
+                }
+
+                status.textContent = "PROJECT PUBLISHED SUCCESSFULLY!";
+                status.className = "text-center text-xs mt-4 text-studio-gold font-bold tracking-widest";
+                document.getElementById('uploadForm').reset();
+                document.getElementById('fileLabel').textContent = "Click to select photos";
+                document.getElementById('fileLabel').classList.remove('text-studio-gold');
+                loadProjectList(); 
+
+            } catch (error) {
+                console.error(error);
+                status.textContent = "FAILED: " + error.message;
+                status.className = "text-center text-xs mt-4 text-red-400 font-bold";
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "PUBLISH PROJECT";
+            }
+        });
+
+        // --- MANAGE PROJECTS LOGIC ---
+        async function loadProjectList() {
+            const tbody = document.getElementById('projectTableBody');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8 italic text-gray-500">Refreshing list...</td></tr>';
+
+            const { data, error } = await sb
+                .from('projects')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if(error) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-red-400">Error loading data</td></tr>`;
+                return;
+            }
+
+            if(data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500">No projects found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            data.forEach(proj => {
+                const date = new Date(proj.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'});
+                const safeTitle = proj.title.replace(/'/g, "\\'"); 
+                
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-white/5 transition-colors group";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 text-gray-500 text-xs whitespace-nowrap">${date}</td>
+                    <td class="px-6 py-4">
+                        <span class="block text-white font-serif italic text-lg">${proj.title}</span>
+                        <span class="block text-[10px] text-gray-600 font-mono mt-1">/${proj.slug}</span>
+                    </td>
+                    <td class="px-6 py-4"><span class="border border-white/20 text-gray-400 py-1 px-3 rounded-full text-[10px] uppercase tracking-wider">${proj.category}</span></td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="deleteProject(${proj.id}, '${safeTitle}')" class="text-gray-500 hover:text-red-400 transition-colors p-2" title="Delete Project">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function deleteProject(id, title) {
+            if(!confirm(`Delete project "${title}" permanently?`)) return;
+
+            const { error } = await sb
+                .from('projects')
+                .delete()
+                .eq('id', id);
+
+            if(error) {
+                alert("Failed: " + error.message);
+            } else {
+                loadProjectList(); 
+            }
+        }
+
+        checkSession();
+    </script>
+</body>
+</html>
